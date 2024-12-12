@@ -76,7 +76,7 @@ public class Day3 : IDay
         }
         
         Regex startDo = new("^(.*?)(?=don't\\(\\))");
-        Regex betweenDoDont = new("do\\(\\).+don't\\(\\)");
+        Regex betweenDoDont = new("do\\(\\)(.*?)(?=don't\\(\\))");
         Regex endDo = new("do\\(\\)(?!.*don't\\(\\)).*");
 
         var sb1 = new StringBuilder();
@@ -85,7 +85,6 @@ public class Day3 : IDay
         var matchesBetween = betweenDoDont.Matches(sb.ToString());
         var matchesEnd = endDo.Matches(sb.ToString());
         
-        //matchesBetween.ToList().ForEach(x => sb1.Append(x));
         sb1.Append(matchesStart[0]);
         foreach (Match matching in matchesBetween)
         {

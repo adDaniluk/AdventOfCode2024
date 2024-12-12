@@ -65,11 +65,8 @@ public class Day2 : IDay
     
     public Day2()
     {
-      
-
     }
-
-
+    
     private int Task1()
     {
         Regex reg = new("\\d+");
@@ -118,64 +115,96 @@ public class Day2 : IDay
 
     private int Task2()
     {
-//24 27 22 21 19 17 15 14
         Regex reg = new("\\d+");
         var result = 0;
-
+        var badList = new List<List<int>>();
+        
         foreach (var line in InputList)
         {
             var matches = reg.Matches(line);
             var levels = matches.Select(m => int.Parse(m.ToString())).ToList();
-
-            _isDescending = levels[0] == levels[1] ? levels[1] > levels[2] : levels[0] > levels[1];
             
+            var isDescending = levels[0] > levels[1];
             var isValid = true;
-            var removedLevel = 1;
             
             for (var i = 0; i < levels.Count - 1; i++)
             {
                 var diff = levels[i] - levels[i + 1];
-                if (_isDescending)
+                if (isDescending)
                 {
                     if (diff is <= 0 or > 3)
                     {
-                        if (removedLevel == 0)
-                        {
-                            isValid = false;
-                            break;
-                        }
-                        removedLevel--;
-                        levels.RemoveAt(+1);
-                        levels.Add(levels[^1]-1);
-                        i--;
+                        isValid = false;
+                        break;
                     }
                 }
                 else
                 {
                     if (!(diff < 0 && Math.Abs(diff) <= 3))
                     {
-                        if (removedLevel == 0)
-                        {
-                            isValid = false;
-                            break;
-                        }
-                        removedLevel--;
-                        levels.RemoveAt(i+1);
-                        levels.Add(levels[^1]+1);
-                        i--;
+                        isValid = false;
+                        break;
                     }
                 }
             }
 
             if (!isValid)
-                continue;
-            
+            {
+                if (!CheckWithRemove(levels))
+                {
+                 badList.Add(levels);
+                 continue;   
+                }
+            }
+
             result++;
         }
-
+        
         return result;
     }
+    
+    
+    private bool CheckWithRemove(List<int> list)
+    {
+        
+        bool status = new bool();
 
+        for (int i = 0; i < list.Count; i++)
+        {
+            status = true;
+            var updateList = new List<int>(list);
+            updateList.RemoveAt(i);
+            var isDescending = updateList[0] > updateList[1];
+            
+            for (var j = 0; j < updateList.Count - 1; j++)
+            {
+                var diff = updateList[j] - updateList[j + 1];
+                if (isDescending)
+                {
+                    if (diff is <= 0 or > 3)
+                    {
+                        status = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (!(diff < 0 && Math.Abs(diff) <= 3))
+                    {
+                        status = false;
+                        break;
+                    }
+                }
+            }
+
+            if (status is true)
+                return status;
+        }
+        
+        return status;
+    }
+
+    
     public void GetTask1()
     {
         Console.WriteLine(Task1().ToString());
